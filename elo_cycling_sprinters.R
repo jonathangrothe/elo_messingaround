@@ -11,22 +11,23 @@ headtohead <- read_csv("headtohead.csv")
 
 #a function which calculates the expected score of a rider based on elo
 
-rider_vector <- function(df){
-  return (unlist(df[1]))
-}
+# rider_vector <- function(df){
+#   return (unlist(df[1]))
+# }
+
 
 num_riders <- function(rider_vector){
   return (length(rider_vector))
 }
 
+ 
+# elo_vector <- function(df){
+#   return (unlist(df[ncol(df)]))
+# }
 
-elo_vector <- function(df){
-  return (unlist(df[ncol(df)]))
-}
-
-stage_vector <- function(df,stage){
-  return (unlist(df[stage+1]))
-}
+# stage_vector <- function(df,stage){
+#   return (unlist(df[stage+1]))
+# }
 
 ex_score <- function(elo_vector, rider){
   sum <- 0 
@@ -46,7 +47,7 @@ for (i in 1:14){
   score_values[i]<-score
 }
 
-update <- function(scoring_vector, stage_vector, rider_vector, elo_vector, rider){
+update <- function(scoring_vector, elo_vector, stage_vector, rider){
   actual_result <- scoring_vector[stage_vector[rider]]
   expected_result <- ex_score(elo_vector, rider)
   updated_elo = elo_vector[rider] + 20*13*(actual_result-expected_result)
@@ -54,13 +55,13 @@ update <- function(scoring_vector, stage_vector, rider_vector, elo_vector, rider
 }
 
 elo <- function(df, scoring_vector){
-  rider_vector <- rider_vector(df)
-  elo_vector <- elo_vector(df)
+  rider_vector <- unlist(df[1])
+  elo_vector <- unlist(df[ncol(df)])
   for (x in 2:(ncol(df)-1)){
     updated_elo <- vector(length=14)
-    stage <- stage_vector(df,x)
+    stage <- unlist(df[x])
     for (i in 1:14){
-      rider_elo <- update(scoring_vector, stage, rider_vector, elo_vector, i)
+      rider_elo <- update(scoring_vector, elo_vector, stage, i)
       updated_elo[i] <- rider_elo
     }
     elo_vector <- updated_elo
