@@ -18,8 +18,10 @@ ex_score <- function(elo_vector, rider){
   rider_elo <- elo_vector[rider]
   num_riders <- num_riders(elo_vector)
   for (i in 1:num_riders){
-    h2hscore <- 1/(1+10^((elo_vector[i]-rider_elo)/400))
-    sum = sum + h2hscore
+    if(i != rider){
+      h2hscore <- 1/(1+10^((elo_vector[i]-rider_elo)/400))
+      sum = sum + h2hscore
+    }
   }
   ex_score <- (2*sum)/(num_riders*(num_riders-1))
   return(ex_score)
