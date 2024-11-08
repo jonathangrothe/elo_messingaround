@@ -4,7 +4,8 @@
 #step 1: get dataset with all proper sprinters in tdf and all their sprint results
 
 library(readr)
-headtohead <- read_csv("headtohead.csv")
+headtohead <- read_csv("tdf_headtohead.csv")
+giro_h2h <-read_csv("giro_headtohead.csv")
 
 #step 2: do the elo process
 
@@ -28,10 +29,13 @@ ex_score <- function(elo_vector, rider){
 }
 
 #setting up the values for each place (can change scaling)
-score_values <- vector(length=14)
-for (i in 1:14){
-  score <- (14-i)/91
-  score_values[i]<-score
+score_vector <- function(num){
+  score_values <- vector(length=num)
+  for (i in 1:num){
+    score <- 2*(num-i)/(num*(num-1))
+    score_values[i]<-score
+  }
+  return (score_values)
 }
 
 update <- function(scoring_vector, elo_vector, stage_vector, rider){
@@ -57,8 +61,13 @@ elo <- function(df, scoring_vector){
   return (updated_elo)
 }
 
+scores_14 <- score_vector(14)
 
-rider_elo <- elo(headtohead,score_values)
+#CURRENTLY GIRO GIVES SUM OF 78, NOT OK
+scores_12 <- score_vector(12)
+
+rider_elo_tdf <- elo(headtohead,scores_14)
+rider_elo_giro <- elo(giro_h2h,scores_12)
 
 rider_elos <- data.frame(headtohead$...1,rider_elo)
 
