@@ -5,7 +5,8 @@
 
 library(readr)
 headtohead <- read_csv("tdf_headtohead.csv")
-giro_h2h <-read_csv("giro_headtohead.csv")
+giro_h2h <- read_csv("giro_headtohead.csv")
+vuelta_h2h <- read_csv("vuelta_headtohead.csv")
 
 #step 2: do the elo process
 
@@ -76,9 +77,11 @@ elo <- function(df, scoring_vector){
 
 scores_14 <- linear_score_vector(14)
 scores_12 <- linear_score_vector(12)
+scores_9 <- linear_score_vector(9)
 
 exp_2_14 <- exponential_score_vector(14, 2)
 exp_2_12 <- exponential_score_vector(12, 2)
+exp_2_9 <- exponential_score_vector(9, 2)
 
 rider_elo_tdf <- elo(headtohead,scores_14)
 rider_elo_exp2_tdf <- elo(headtohead,exp_2_14)
@@ -88,6 +91,9 @@ rider_elo_giro <- elo(giro_h2h,scores_12)
 rider_elo_exp2_giro <- elo(giro_h2h,exp_2_12)
 rider_elo_giro_df <- data.frame(giro_h2h$...1,rider_elo_giro,rider_elo_exp2_giro)
 
+rider_elo_vuelta <- elo(vuelta_h2h,scores_9)
+rider_elo_exp2_vuelta <- elo(vuelta_h2h,exp_2_9)
+rider_elo_vuelta_df <- data.frame(vuelta_h2h$...1,rider_elo_vuelta,rider_elo_exp2_vuelta)
 
 #plotting 
 
@@ -105,6 +111,13 @@ giro <- ggplot(data = rider_elo_giro_df, aes(x=rider_elo_giro,y=rider_elo_exp2_g
   labs(x="linear elo at the giro d'italia", y="exponential elo at giro d'italia") +
   theme_minimal() 
 giro
+
+vuelta <- ggplot(data = rider_elo_vuelta_df, aes(x=rider_elo_vuelta,y=rider_elo_exp2_vuelta)) +
+  geom_point() +
+  geom_text(label=rider_elo_vuelta_df$vuelta_h2h....1,check_overlap = TRUE) +
+  labs(x="linear elo at the vuelta", y="exponential elo at the vuelta") +
+  theme_minimal() 
+vuelta
 
 
 
