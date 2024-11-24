@@ -29,10 +29,23 @@ ex_score <- function(elo_vector, rider){
 }
 
 #setting up the values for each place (can change scaling)
-score_vector <- function(num){
+linear_score_vector <- function(num){
   score_values <- vector(length=num)
   for (i in 1:num){
     score <- 2*(num-i)/(num*(num-1))
+    score_values[i]<-score
+  }
+  return (score_values)
+}
+
+exponential_score_vector <- function(num, alpha){
+  score_values <- vector(length = num)
+  for (i in 1:num){
+    denominator <- 0
+    for (n in 1:num){
+      denominator <- denominator + alpha^(num-n)-1
+    }
+    score <- (alpha^(num-i)-1)/(denominator)
     score_values[i]<-score
   }
   return (score_values)
@@ -61,15 +74,37 @@ elo <- function(df, scoring_vector){
   return (updated_elo)
 }
 
-scores_14 <- score_vector(14)
-scores_12 <- score_vector(12)
+scores_14 <- linear_score_vector(14)
+scores_12 <- linear_score_vector(12)
+
+exp_2_14 <- exponential_score_vector(14, 2)
+exp_2_12 <- exponential_score_vector(12, 2)
 
 rider_elo_tdf <- elo(headtohead,scores_14)
+rider_elo_exp2_tdf <- elo(headtohead,exp_2_14)
+rider_elo_tdf_df <- data.frame(headtohead$...1,rider_elo_tdf,rider_elo_exp2_tdf)
+
 rider_elo_giro <- elo(giro_h2h,scores_12)
+rider_elo_exp2_giro <- elo(giro_h2h,exp_2_12)
+rider_elo_giro_df <- data.frame(giro_h2h$...1,rider_elo_giro,rider_elo_exp2_giro)
 
-rider_elos <- data.frame(giro_h2h$...1,rider_elo_giro)
 
+#plotting 
 
+library(ggplot2)
+tdf <- ggplot(data = rider_elo_tdf_df, aes(x=rider_elo_tdf,y=rider_elo_exp2_tdf)) +
+  geom_point() +
+  geom_text(label=rider_elo_tdf_df$headtohead....1,check_overlap = TRUE) +
+  labs(x="linear elo at the tour de france", y="exponential elo at tdf") +
+  theme_minimal() 
+tdf
+
+giro <- ggplot(data = rider_elo_giro_df, aes(x=rider_elo_giro,y=rider_elo_exp2_giro)) +
+  geom_point() +
+  geom_text(label=rider_elo_giro_df$giro_h2h....1,check_overlap = TRUE) +
+  labs(x="linear elo at the giro d'italia", y="exponential elo at giro d'italia") +
+  theme_minimal() 
+giro
 
 
 
