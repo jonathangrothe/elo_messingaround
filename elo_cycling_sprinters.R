@@ -62,14 +62,12 @@ elo <- function(df, scoring_vector){
 }
 
 scores_14 <- score_vector(14)
-
-#CURRENTLY GIRO GIVES SUM OF 78, NOT OK
 scores_12 <- score_vector(12)
 
 rider_elo_tdf <- elo(headtohead,scores_14)
 rider_elo_giro <- elo(giro_h2h,scores_12)
 
-rider_elos <- data.frame(headtohead$...1,rider_elo)
+rider_elos <- data.frame(giro_h2h$...1,rider_elo_giro)
 
 
 
